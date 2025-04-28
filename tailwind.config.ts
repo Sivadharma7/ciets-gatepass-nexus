@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// CIET theme colors
+				ciet: {
+					primary: "#1A56DB",
+					secondary: "#1E429F",
+					accent: "#3B82F6",
+					success: "#10B981",
+					warning: "#FBBF24",
+					danger: "#EF4444",
+					light: "#F3F4F6",
+					dark: "#1F2937",
 				}
 			},
 			borderRadius: {
