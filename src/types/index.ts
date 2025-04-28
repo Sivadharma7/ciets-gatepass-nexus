@@ -33,3 +33,14 @@ export interface GatePass {
   approvedByName?: string;
   approvedById?: string;
 }
+
+// Additional types for form inputs
+export interface FormInput {
+  id: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  required: boolean;
+  disabled?: boolean;
+  value?: string;
+}

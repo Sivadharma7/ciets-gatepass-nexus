@@ -3,96 +3,147 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useData } from "@/context/DataContext";
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { FormInput } from "@/types";
 
 const GatePassForm = () => {
   const { currentUser, addGatePass } = useData();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const [formData, setFormData] = useState({
-    reason: "",
-    fromDate: "",
-    toDate: "",
-    destination: "",
-  });
-  
+
+  // Form state
+  const [reason, setReason] = useState("");
+  const [destination, setDestination] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [parentPhoneNumber, setParentPhoneNumber] = useState(
+    currentUser?.parentPhoneNumber || ""
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!currentUser || currentUser.role !== "student") {
-    return navigate("/dashboard");
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Form validation
-    if (!formData.reason || !formData.fromDate || !formData.toDate || !formData.destination) {
+    
+    if (!currentUser) {
       toast({
-        title: "Validation Error",
+        title: "Error",
+        description: "You must be logged in to apply for a gate pass.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate form
+    if (!reason || !destination || !fromDate || !toDate || !parentPhoneNumber) {
+      toast({
+        title: "Missing information",
         description: "Please fill in all required fields.",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
-    // Check if from date is before to date
-    const fromDate = new Date(formData.fromDate);
-    const toDate = new Date(formData.toDate);
-    
-    if (fromDate > toDate) {
+    // Validate dates
+    const fromDateTime = new Date(fromDate).getTime();
+    const toDateTime = new Date(toDate).getTime();
+    const currentDateTime = new Date().getTime();
+
+    if (fromDateTime < currentDateTime) {
       toast({
-        title: "Date Error",
-        description: "From date must be before or equal to To date.",
+        title: "Invalid dates",
+        description: "From date cannot be in the past.",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
-    // Add the new gate pass
-    try {
-      addGatePass({
-        studentId: currentUser.studentId!,
-        studentName: currentUser.name,
-        department: currentUser.department!,
-        year: currentUser.year!,
-        reason: formData.reason,
-        fromDate: formData.fromDate,
-        toDate: formData.toDate,
-        destination: formData.destination,
-        parentPhoneNumber: currentUser.parentPhoneNumber!,
+    if (toDateTime < fromDateTime) {
+      toast({
+        title: "Invalid dates",
+        description: "To date cannot be before from date.",
+        variant: "destructive",
       });
+      return;
+    }
 
-      // Navigate back to dashboard after successful submission
-      setTimeout(() => {
+    // Show loading state
+    setIsSubmitting(true);
+
+    // Submit gate pass
+    setTimeout(() => {
+      try {
+        // Create gate pass object using the current student's information
+        addGatePass({
+          studentId: currentUser.studentId || "",
+          studentName: currentUser.name,
+          department: currentUser.department || "",
+          year: currentUser.year || "",
+          reason,
+          fromDate,
+          toDate,
+          destination,
+          parentPhoneNumber,
+        });
+
+        // Navigate back to dashboard
         navigate("/dashboard");
-      }, 1000);
-    } catch (error) {
-      console.error("Error submitting gate pass:", error);
-      toast({
-        title: "Submission Error",
-        description: "There was a problem submitting your gate pass application.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-    }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to submit gate pass. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    }, 1000); // Simulate API delay
   };
+
+  // Create form fields for student information
+  const studentFields: FormInput[] = [
+    {
+      id: "student-name",
+      label: "Student Name",
+      type: "text",
+      placeholder: "Student Name",
+      value: currentUser?.name || "",
+      required: true,
+      disabled: true,
+    },
+    {
+      id: "student-id",
+      label: "Student ID",
+      type: "text",
+      placeholder: "Student ID",
+      value: currentUser?.studentId || "",
+      required: true,
+      disabled: true,
+    },
+    {
+      id: "department",
+      label: "Department",
+      type: "text",
+      placeholder: "Department",
+      value: currentUser?.department || "",
+      required: true,
+      disabled: true,
+    },
+    {
+      id: "year",
+      label: "Year",
+      type: "text",
+      placeholder: "Year",
+      value: currentUser?.year || "",
+      required: true,
+      disabled: true,
+    },
+  ];
 
   return (
     <Layout>
@@ -101,98 +152,92 @@ const GatePassForm = () => {
           <CardHeader>
             <CardTitle>Apply for Gate Pass</CardTitle>
             <CardDescription>
-              Fill out the form below to request a new gate pass. All fields are required.
+              Fill in the details below to request a gate pass. All fields are required.
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
-              {/* Student Information - Read Only */}
+              {/* Student Information Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Student Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" value={currentUser.name} disabled />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="studentId">Student ID</Label>
-                    <Input id="studentId" value={currentUser.studentId} disabled />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Department</Label>
-                    <Input id="department" value={currentUser.department} disabled />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="year">Year</Label>
-                    <Input id="year" value={currentUser.year} disabled />
-                  </div>
+                  {studentFields.map((field) => (
+                    <div key={field.id} className="space-y-2">
+                      <Label htmlFor={field.id}>{field.label}</Label>
+                      <Input
+                        id={field.id}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        disabled={field.disabled}
+                        required={field.required}
+                        readOnly={field.disabled}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Gate Pass Details */}
+              {/* Gate Pass Details Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Gate Pass Details</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="reason">Reason for Gate Pass <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="reason">Reason for Gate Pass</Label>
                   <Textarea
                     id="reason"
-                    name="reason"
-                    value={formData.reason}
-                    onChange={handleInputChange}
-                    placeholder="Enter the reason for requesting a gate pass"
+                    placeholder="Please provide a detailed reason for your gate pass request"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
                     required
                     className="min-h-[100px]"
                   />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fromDate">From Date & Time <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="fromDate"
-                      name="fromDate"
-                      type="datetime-local"
-                      value={formData.fromDate}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="toDate">To Date & Time <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="toDate"
-                      name="toDate"
-                      type="datetime-local"
-                      value={formData.toDate}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="destination">Destination <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="destination">Destination</Label>
                   <Input
                     id="destination"
-                    name="destination"
-                    value={formData.destination}
-                    onChange={handleInputChange}
-                    placeholder="Enter your destination"
+                    type="text"
+                    placeholder="Where are you going?"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
                     required
                   />
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="from-date">From Date & Time</Label>
+                    <Input
+                      id="from-date"
+                      type="datetime-local"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="to-date">To Date & Time</Label>
+                    <Input
+                      id="to-date"
+                      type="datetime-local"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="parentPhone">Parent's Phone Number</Label>
+                  <Label htmlFor="parent-phone">Parent's Phone Number</Label>
                   <Input
-                    id="parentPhone"
-                    value={currentUser.parentPhoneNumber}
-                    disabled
-                    description="This number will receive SMS notifications about your gate pass status."
+                    id="parent-phone"
+                    type="tel"
+                    placeholder="Parent's phone number for notifications"
+                    value={parentPhoneNumber}
+                    onChange={(e) => setParentPhoneNumber(e.target.value)}
+                    required
                   />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Your parent will be notified via SMS when your gate pass is approved or rejected.
-                  </p>
                 </div>
               </div>
             </CardContent>
@@ -205,12 +250,8 @@ const GatePassForm = () => {
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="bg-ciet-primary hover:bg-ciet-secondary"
-              >
-                {isSubmitting ? "Submitting..." : "Submit Application"}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Gate Pass Request"}
               </Button>
             </CardFooter>
           </form>
