@@ -2,13 +2,15 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useData } from "@/context/DataContext";
 import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
+import { HostelCollage } from "@/components/home/HostelCollage";
+import { HostelFacilities } from "@/components/home/HostelFacilities";
 import { 
   CheckCircle2, 
   ClipboardList, 
   Lock, 
   Database, 
   Users, 
-  Home,
   MessageSquare,
   MapPin
 } from "lucide-react";
@@ -124,95 +126,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Database & Backend Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Database & Backend</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              The CIET Hostel Gate Pass system is powered by a secure database that stores all user 
-              information and gate pass records.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <Database className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Data Storage</h3>
-              <p className="text-gray-600">
-                All user profiles, gate pass applications, and approval records are securely stored
-                in our database with proper encryption and access controls.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <Lock className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Authentication</h3>
-              <p className="text-gray-600">
-                Role-based authentication ensures that students, wardens, and administrators
-                can only access features relevant to their responsibilities.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <MessageSquare className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">SMS Notifications</h3>
-              <p className="text-gray-600">
-                Our backend integrates with SMS services to send automatic notifications to parents
-                when gate passes are approved or rejected, ensuring transparency.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hostel Photo Collage */}
+      <HostelCollage />
 
-      {/* Features Section */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Key Features</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <ClipboardList className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Easy Application</h3>
-              <p className="text-gray-600">
-                Students can easily apply for gate passes online, saving time and reducing paperwork.
-              </p>
-            </div>
-            
-            {/* Feature 2 */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle2 className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Quick Approval</h3>
-              <p className="text-gray-600">
-                Wardens can efficiently review and approve gate pass requests through the digital dashboard.
-              </p>
-            </div>
-            
-            {/* Feature 3 */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-ciet-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                <Lock className="h-6 w-6 text-ciet-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Secure Notifications</h3>
-              <p className="text-gray-600">
-                Automatic notifications keep parents informed about their child's gate pass status.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hostel Facilities */}
+      <HostelFacilities />
 
       {/* Call to Action */}
       <section className="bg-gray-100 py-16 px-6">
