@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useData } from "@/context/DataContext";
@@ -10,7 +9,8 @@ import {
   Database, 
   Users, 
   Home,
-  MessageSquare
+  MessageSquare,
+  MapPin
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,16 +44,38 @@ const Index = () => {
         </div>
       </header>
 
-      {/* About Section */}
+      {/* About Section with Address */}
       <section className="py-16 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">About The System</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
+            <p className="text-gray-600 max-w-3xl mx-auto mb-8">
               The CIET Hostel Gate Pass Management System is designed to streamline the process of applying for and 
               approving hostel gate passes. It replaces the traditional paper-based system with a digital solution
               that improves efficiency, transparency, and communication between students, wardens, and parents.
             </p>
+            
+            <div className="bg-gray-50 p-6 rounded-lg max-w-2xl mx-auto">
+              <div className="flex items-start gap-4">
+                <div className="mt-1">
+                  <MapPin className="h-6 w-6 text-ciet-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-semibold mb-2">Our Hostel Address</h3>
+                  <p className="text-gray-600">
+                    CIET Boys Hostel<br />
+                    Coimbatore Institute of Engineering and Technology<br />
+                    Civil Aerodrome Post<br />
+                    Coimbatore - 641014<br />
+                    Tamil Nadu, India
+                  </p>
+                  <p className="mt-4 text-gray-600">
+                    <strong>Hostel Office Contact:</strong> +91-422-2572177<br />
+                    <strong>Email:</strong> hostel@ciet.edu
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
           
           <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -99,122 +121,6 @@ const Index = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* User Guides Section */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">How To Use The System</h2>
-          
-          <Tabs defaultValue="students" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="students">For Students</TabsTrigger>
-              <TabsTrigger value="wardens">For Wardens</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="students">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-6 w-6" /> Student Guide
-                  </CardTitle>
-                  <CardDescription>
-                    How students can use the gate pass system
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">1. Login to Your Account</h3>
-                      <p className="text-gray-600 mb-2">Use your student credentials to access the system.</p>
-                      <div className="bg-gray-50 p-3 rounded text-sm">
-                        <strong>Sample Login:</strong> arun@ciet.edu / password
-                      </div>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">2. Apply for a Gate Pass</h3>
-                      <p className="text-gray-600">Click on "Apply for Gate Pass" from your dashboard and fill in:</p>
-                      <ul className="list-disc list-inside ml-4 mt-2 text-gray-600">
-                        <li>Reason for leaving</li>
-                        <li>Destination</li>
-                        <li>Departure and return dates</li>
-                        <li>Parent's contact number</li>
-                      </ul>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">3. Track Your Application</h3>
-                      <p className="text-gray-600">
-                        Monitor your gate pass status from your dashboard. You'll see status updates 
-                        (Pending, Approved, or Rejected) and any remarks from the warden.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">4. Gate Pass History</h3>
-                      <p className="text-gray-600">
-                        Access your complete history of gate pass applications for reference and tracking.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="wardens">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Home className="h-6 w-6" /> Warden Guide
-                  </CardTitle>
-                  <CardDescription>
-                    How wardens can manage gate pass applications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">1. Access Your Dashboard</h3>
-                      <p className="text-gray-600 mb-2">Log in with your warden credentials.</p>
-                      <div className="bg-gray-50 p-3 rounded text-sm">
-                        <strong>Sample Login:</strong> rajesh@ciet.edu / password
-                      </div>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">2. Review Pending Applications</h3>
-                      <p className="text-gray-600">
-                        Your dashboard displays all pending gate pass applications. Click on any application 
-                        to view complete details including student information and reason for leave.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">3. Approve or Reject Requests</h3>
-                      <p className="text-gray-600">
-                        For each application, you can:
-                      </p>
-                      <ul className="list-disc list-inside ml-4 mt-2 text-gray-600">
-                        <li>Approve the gate pass</li>
-                        <li>Reject with reason</li>
-                        <li>Add remarks/instructions for the student</li>
-                      </ul>
-                    </div>
-                    
-                    <div className="bg-white p-4 rounded-lg border">
-                      <h3 className="text-lg font-medium mb-2">4. Parent Notification System</h3>
-                      <p className="text-gray-600">
-                        When you approve or reject a gate pass, the system automatically sends an SMS 
-                        notification to the parent's registered mobile number with relevant details.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
         </div>
       </section>
 
